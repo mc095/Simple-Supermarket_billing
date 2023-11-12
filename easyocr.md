@@ -1,104 +1,59 @@
-Optical Character Recognition Using EasyOCR In Python
+OCR, or Optical Character Recognition, is a technology that converts different types of documents—such as scanned paper documents, PDFs, or images captured by a digital camera—into editable and searchable data. OCR enables computers to recognize text within these images and convert it into machine-readable text.
 
-Computer Vision OCR
-OCR is used for extracting text data from images. We discussed TesseractOCR for extracting text from different kind of images in our previous post. There are other options also available like easyocr, paddle paddle and different other tools. So in this tutorial we will use EasyOCR for extracting text data from images.
+Here's an explanation of OCR with examples:
 
-EasyOCR supports 80+ languages and all popular writing scripts including Latin, Chinese, Arabic, Devanagari, Cyrillic and etc. For complete details on language support and other options, check EasyOCR github page.
+How OCR Works:
+Image Acquisition:
 
-https://github.com/JaidedAI/EasyOCR
+OCR begins with acquiring an image containing text. This image can be obtained from a variety of sources, such as scanned documents, photographs, or screenshots.
+Preprocessing:
 
-Installation
-EasyOCR can be installed using pip easily on your system. It requires torch and torchvision installed before using EasyOCR so first need to install torch. Torch can be installed from pytorch website using pip and if you want to use GPU, use torch cuda version while installing. For more details check pytorch official page https://pytorch.org/. Now we can install easyocr on system.
+Preprocessing involves enhancing the image quality to improve OCR accuracy. This may include tasks like noise reduction, binarization (converting the image to black and white), and image scaling.
+Text Detection:
 
-# install using pip
-pip install easyocr
+OCR algorithms locate areas in the image that likely contain text. Text detection helps define regions of interest for further analysis.
+Character Recognition:
 
-# install from git (latest development release)
-pip install git+git://github.com/jaidedai/easyocr.gitCopy
-Once installation is complete, we can use EasyOCR for character recognition. EasyOCR also provide docker file, check it out on github repo.
+The identified text regions are then processed for character recognition. OCR algorithms analyze the shapes and patterns within these regions to recognize individual characters.
+Post-Processing:
 
-Usage
-EasyOCR usage is very simple, on initialization we can specify a list of languages and also specify if GPU usage is required.
+After character recognition, post-processing steps may be applied to correct errors and improve the accuracy of the recognized text.
+Output:
 
-import easyocr
+The final output is machine-readable text that can be used for various purposes such as indexing, searching, or editing.
+Examples of OCR Applications:
+Document Digitization:
 
-# specify languages and other configs
-reader = easyocr.Reader(['en'])
+OCR is widely used to convert printed or handwritten documents into digital formats. For example, scanning a paper document and converting it into an editable text document.
+Text Extraction from Images:
 
-# multiple languages (chinese, english)
-reader = easyocr.Reader(['ch_sim','en'])
+OCR is employed to extract text from images captured by cameras or smartphones. This is useful for applications like business card scanning or translating text from images.
+Data Entry Automation:
 
-# no gpu
-reader = easyocr.Reader(['ch_sim','en'], gpu=False)Copy
-EasyOCR also offers to specify different languages in reader but not all languages can be used together. If you dont want to use GPU, set gpu=False in reader. If model for current configuration does not exist on system, it will download it from their repo, this process run only once.
+OCR is utilized to automate data entry by extracting text from invoices, receipts, or forms. This reduces manual data entry efforts and minimizes errors.
+Accessible Document Creation:
 
-Now we can input image to model and get results. It returns all detections with text output, bbox coordinates for text and confidence score.
+OCR plays a crucial role in creating accessible documents for individuals with visual impairments. By converting scanned text into readable formats, OCR enables screen readers to interpret the content.
+Language Translation:
 
-# image path
-result = reader.readtext('images/dpct0017.jpg')Copy
-[([[69, 75], [944, 75], [944, 250], [69, 250]],
-  'September',
-  0.9998583346101947)]Copy
-We can also input a numpy array, bytes or a url to fetch from web. Lets read image using opencv and provide as input to model.
+OCR can be integrated with language translation tools. For example, capturing text in a foreign language from an image and translating it into the desired language.
+License Plate Recognition (LPR):
 
-Using OpenCV
+LPR systems use OCR to read and recognize license plate numbers from images captured by surveillance cameras.
+Handwriting Recognition:
 
-Install opencv-python and then it can be used to read images and provide as input to easyocr and then also we can draw on image.
+OCR algorithms can be trained to recognize handwritten text, allowing for the conversion of handwritten notes or documents into digital text.
+OCR Libraries and Tools:
+Tesseract OCR:
 
-import cv2
+An open-source OCR engine developed by Google. It supports various languages and is widely used in many applications.
+easyOCR:
 
-image = cv2.imread('images/Pict0021.jpg') # read image
+A Python library for OCR that integrates with deep learning models to achieve high accuracy in text recognition.
+Adobe Acrobat OCR:
 
-# perform character recognition
-result = reader.readtext(image)
-Copy
-As it returns box coordinates, so we can draw on image using opencv methods.
+Adobe Acrobat includes OCR capabilities for converting scanned PDFs into searchable and editable documents.
+ABBYY FineReader:
 
-# iterate on all results
-for res in results:
-    top_left = tuple(res[0][0]) # top left coordinates as tuple
-    bottom_right = tuple(res[0][2]) # bottom right coordinates as tuple
-    # draw rectangle on image
-    cv2.rectangle(image, top_left, bottom_right, (0, 255, 0), 2) 
-    # write recognized text on image (top_left) minus 10 pixel on y
-    cv2.putText(image, res[1], (top_left[0], top_left[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)Copy
-My alt textIt can work for multiple words detection and drawing on image using this code.
-
-From URL
-
-We can also provide image url input so it will fetch image and perform OCR automatically.
-
-# provide image url instead of path
-result = reader.readtext('https://i.stack.imgur.com/WiDpa.jpg')Copy
-[([[19, 0], [897, 0], [897, 120], [19, 120]],
-  'The quick brown fox',
-  0.7889624100176502),
- ([[11, 113], [805, 113], [805, 229], [11, 229]],
-  'jumped over the 5',
-  0.9480686027185475),
- ([[13, 219], [469, 219], [469, 334], [13, 334]],
-  'lazy dogs!',
-  0.9391474148848226)]Copy
-We can also provide detail=0 to get only text, if not interseted in coordinates and confidence score.
-
-result = reader.readtext('https://i.stack.imgur.com/WiDpa.jpg', detail=0)Copy
-['The quick brown fox', 'jumped over the 5', 'lazy dogs!']Copy
-We can also iterate over a directory or bunch of images. Here are some other outputs from OCR model on different images and different environments.
-
-import cv2
-import os
-
-for image_name in os.listdir("images"):
-    # read image
-    image = cv2.imread(f'images/{image_name}')
-    results = reader.readtext(image)
-
-    # draw rectangle on easyocr results
-    for res in results:
-        top_left = (int(res[0][0][0]), int(res[0][0][1])) # convert float to int
-        bottom_right = (int(res[0][2][0]), int(res[0][2][1])) # convert float to int
-        cv2.rectangle(image, top_left, bottom_right, (0, 255, 0), 3)
-        cv2.putText(image, res[1], (top_left[0], top_left[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 2)
-
-    # write image
-    cv2.imwrite(f'output/{image_name}', image)
+A commercial OCR software that offers advanced features for document conversion and recognition.
+In summary, OCR technology is versatile and finds application in diverse fields, streamlining tasks that involve extracting text from images and making the content more accessible and usable in digital form.
