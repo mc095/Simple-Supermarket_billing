@@ -1,5 +1,4 @@
-# my-project-02
-Image to Supermarket Billing
+# Image to Supermarket Billing
 
 The code uses the easyocr library for optical character recognition (OCR).
 extraction_and_accumulate_numbers is a function that takes an image path as an input parameter.
