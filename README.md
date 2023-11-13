@@ -1,128 +1,95 @@
 # Image to Supermarket Billing
 
-The code uses the easyocr library for optical character recognition (OCR).
-extraction_and_accumulate_numbers is a function that takes an image path as an input parameter.
-An OCR reader is created with the language set to English ('en').
-The readtext method is used to extract text from the image.
-The code iterates through the results, extracts numbers, and accumulates them row-wise.
-The accumulated numbers and their individual addition to each row are printed.
-The user is prompted to enter the path to the image file with a .jpg extension.
+This code defines a Python function that uses the EasyOCR library to perform optical character recognition (OCR) on an image, extract numerical values, and accumulate them. It then incorporates this function into a loop, allowing the user to input the path to an image file, process the bill, and decide whether to enter another bill.
 
-Let's go through each part of the code with detailed explanations:
+Let's break down the code:
 
-```python
-import easyocr
-```
-This line imports the `easyocr` library, which is used for optical character recognition (OCR).
+1. **Importing the EasyOCR library:**
+   ```python
+   import easyocr
+   ```
+   This line imports the `easyocr` library, which is a Python wrapper for the EasyOCR optical character recognition engine.
 
-```python
-def extraction_and_accumulate_numbers(image_path):
-```
-Defines a function named `extraction_and_accumulate_numbers` that takes an `image_path` as a parameter.
+2. **Defining the OCR function:**
+   ```python
+   def extraction_and_accumulate_numbers(image_path):
+   ```
+   This function takes an `image_path` parameter, representing the path to an image file.
 
-```python
-    # Creating an OCR reader
-    reader = easyocr.Reader(['en'])
-```
-Creates an OCR reader using the `easyocr.Reader` class, specifying the language as English ('en').
+3. **Creating an OCR reader:**
+   ```python
+   reader = easyocr.Reader(['en'])
+   ```
+   This line creates an OCR reader object for the English language (`'en'`).
 
-```python
-    # Reading text from the image
-    result = reader.readtext(image_path)
-```
-Uses the `readtext` method of the OCR reader to extract text from the image specified by `image_path`.
+4. **Reading text from the image:**
+   ```python
+   result = reader.readtext(image_path)
+   ```
+   This line uses the OCR reader to extract text from the specified image, and the result is stored in the `result` variable.
 
-```python
-    # Processing the result to extract whole numbers in row-wise
-    accumulated_numbers = []
-    current_row_numbers = []
-```
-Creates empty lists (`accumulated_numbers` and `current_row_numbers`) to store accumulated numbers and numbers in the current row, respectively.
+5. **Processing the result to extract whole numbers:**
+   ```python
+   accumulated_numbers = []
+   current_row_numbers = []
+   ```
+   Initialize two lists, `accumulated_numbers` and `current_row_numbers`, to store the extracted numbers.
 
-```python
-    for detection in result:
-```
-Iterates through the results obtained from the OCR.
+6. **Iterating through OCR results:**
+   ```python
+   for detection in result:
+   ```
+   Loop through each text detection in the OCR result.
 
-```python
-        text = detection[1]
-```
-Extracts the text from the detection result.
+7. **Checking and extracting numbers:**
+   ```python
+   text = detection[1]
+   if text.strip():
+       if text.isdigit():
+           current_number = int(text)
+           current_row_numbers.append(current_number)
+       elif current_row_numbers:
+           accumulated_numbers.extend(current_row_numbers)
+           current_row_numbers = []
+   ```
+   If the detected text is not empty or just whitespace, check if it's a digit. If it is, convert it to an integer and add it to the `current_row_numbers` list. If the text is not a digit and the current row has numbers, extend the `accumulated_numbers` list with the numbers from the current row and reset the `current_row_numbers` for the next set of numbers.
 
-```python
-        # Checking if the text is not empty or just a whitespace
-        if text.strip():
-```
-Ensures that the extracted text is not empty or just whitespace.
+8. **Handling the last row of numbers:**
+   ```python
+   if current_row_numbers:
+       accumulated_numbers.extend(current_row_numbers)
+   ```
+   After the loop, check if there are numbers in the last row and extend the `accumulated_numbers` list accordingly.
 
-```python
-            if text.isdigit():
-```
-Checks if the text consists of digits.
+9. **Printing the result:**
+   ```python
+   print("\nPrices of Items as a list: {}".format(accumulated_numbers))
+   print("\nTotal Bill of the Purchase: {}".format(sum(accumulated_numbers)))
+   ```
+   Print the accumulated numbers as a list and their total sum.
 
-```python
-                # If the text is a digit, converting it to an integer
-                current_number = int(text)
-```
-Converts the digit text to an integer (`current_number`).
+10. **Main loop for user interaction:**
+    ```python
+    while True:
+    ```
+    Enter a loop that continues until the user decides to exit.
 
-```python
-                # Adding the current number to the current row
-                current_row_numbers.append(current_number)
-```
-Appends the current number to the list of numbers in the current row.
+11. **User input for image path:**
+    ```python
+    image_path = input("Enter the path to your image file (with a .jpg or .png extension): ")
+    ```
+    Prompt the user to input the path to an image file.
 
-```python
-                # Printing a message indicating the number being added to the current row
-                print("Adding rupees {} to the current list".format(current_number))
-```
-Prints a message indicating the current number being added to the current row.
+12. **Processing the bill:**
+    ```python
+    extraction_and_accumulate_numbers(image_path)
+    ```
+    Call the defined function to process the bill using the provided image path.
 
-```python
-            elif current_row_numbers:
-```
-Checks if there are numbers in the current row.
-
-```python
-                # If the current row has numbers, extending the accumulated list with the numbers from the current row
-                accumulated_numbers.extend(current_row_numbers)
-```
-Extends the list of accumulated numbers with the numbers from the current row.
-
-```python
-                # Resetting the current row for the next set of numbers
-                current_row_numbers = []
-```
-Resets the list of numbers in the current row for the next set of numbers.
-
-```python
-    # Handling the last row of numbers
-    if current_row_numbers:
-```
-Checks if there are numbers in the last row.
-
-```python
-        # If there are numbers in the last row, extending the accumulated list with those numbers
-        accumulated_numbers.extend(current_row_numbers)
-```
-Extends the list of accumulated numbers with the numbers from the last row.
-
-```python
-    # Printing the accumulated numbers row-wise and the total sum
-    print("\nPrices of Items as a list: {}".format(accumulated_numbers))
-    print("\nTotal Bill of the Purchase: {}".format(sum(accumulated_numbers)))
-```
-Prints the accumulated numbers row-wise and the total sum of the prices of items.
-
-```python
-# Inserting the Image path from the system file
-image_path = input("Enter the path to your image file (with a .jpg extension): ")
-```
-Prompts the user to enter the path to their image file with a .jpg extension.
-
-```python
-extraction_and_accumulate_numbers(image_path)
-```
-Calls the `extraction_and_accumulate_numbers` function with the provided `image_path` as an argument.
-
-This code overall performs OCR on an image, extracts numbers, accumulates them row-wise, and prints the accumulated numbers and the total sum of the prices of items. Users are prompted to input the path to their image file.
+13. **Asking the user if they want to enter another bill:**
+    ```python
+    another_bill = input("Do you want to enter another bill? (yes/no): ").lower()
+    if another_bill != 'yes':
+        break
+    ```
+    Prompt the user if they want to enter another bill. If the response is not 'yes', exit the loop, ending the program.
