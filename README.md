@@ -1,4 +1,4 @@
-# Image to Supermarket Billing
+# predicting Toatal Cost Image to sum up Billing at Supermarket
 
 This code defines a Python function that uses the EasyOCR library to perform optical character recognition (OCR) on an image, extract numerical values, and accumulate them. It then incorporates this function into a loop, allowing the user to input the path to an image file, process the bill, and decide whether to enter another bill.
 
